@@ -133,7 +133,7 @@ export default function ExplorePage() {
   useEffect(() => {
     if (tab === 'workouts') loadWorkouts();
     else loadUsers();
-  }, [tab, category, difficulty, sort]);
+  }, [tab, category, difficulty, sort, loadUsers, loadWorkouts]);
 
   const handleSearch = (e) => {
     e.preventDefault();

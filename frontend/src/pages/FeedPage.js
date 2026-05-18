@@ -214,13 +214,13 @@ export default function FeedPage() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab]);
+  }, [activeTab, load]);
 
   useEffect(() => {
     setPosts([]);
     setPage(1);
     load(1, activeTab);
-  }, [activeTab]);
+  }, [activeTab, load]);
 
   return (
     <div className="page-container animate-fade" style={{ maxWidth: 680 }}>
