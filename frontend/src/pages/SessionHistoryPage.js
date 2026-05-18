@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { sessionsAPI } from '../utils/api';
-import { MdFitnessCenter, MdTimer, MdTrendingUp, MdCalendarToday, MdSentimentSatisfied } from 'react-icons/md';
+import { MdFitnessCenter, MdTimer, MdTrendingUp, MdCalendarToday } from 'react-icons/md';
 import { format, formatDistanceToNow } from 'date-fns';
 
 const MOOD_EMOJI = { terrible: '😫', bad: '😕', ok: '😐', good: '🙂', great: '😄', amazing: '🤩' };

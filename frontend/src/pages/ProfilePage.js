@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { usersAPI, socialAPI } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { MdFitnessCenter, MdTrendingUp, MdLocalFireDepartment, MdPersonAdd, MdPerson, MdEmojiEvents } from 'react-icons/md';
@@ -57,7 +57,7 @@ function PostMini({ post, currentUser }) {
 
 export default function ProfilePage() {
   const { username } = useParams();
-  const { user: currentUser, updateUser } = useAuth();
+  const { user: currentUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);

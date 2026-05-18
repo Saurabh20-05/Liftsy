@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { workoutsAPI, usersAPI } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { MdSearch, MdFitnessCenter, MdPlayArrow, MdPersonAdd, MdPerson } from 'react-icons/md';
+import { MdSearch, MdPlayArrow, MdPersonAdd, MdPerson } from 'react-icons/md';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = ['All', 'strength', 'cardio', 'hiit', 'powerlifting', 'bodybuilding', 'calisthenics', 'yoga'];
