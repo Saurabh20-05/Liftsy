@@ -217,10 +217,9 @@ export default function FeedPage() {
   }, [activeTab, load]);
 
   useEffect(() => {
-  setPosts([]);
-  setPage(1);
-
   const fetchData = async () => {
+    setPosts([]);
+    setPage(1);
     await load(1, activeTab);
   };
 
