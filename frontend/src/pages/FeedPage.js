@@ -217,10 +217,15 @@ export default function FeedPage() {
   }, [activeTab, load]);
 
   useEffect(() => {
-    setPosts([]);
-    setPage(1);
-    load(1, activeTab);
-  }, [activeTab, load]);
+  setPosts([]);
+  setPage(1);
+
+  const fetchData = async () => {
+    await load(1, activeTab);
+  };
+
+  fetchData();
+}, [activeTab]);
 
   return (
     <div className="page-container animate-fade" style={{ maxWidth: 680 }}>
