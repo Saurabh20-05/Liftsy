@@ -60,12 +60,12 @@ export default function RegisterPage() {
             <div className="grid-2">
               <div className="form-group">
                 <label className="form-label">Username</label>
-                <input className="form-input" type="text" placeholder="ironman99" value={form.username}
+                <input className="form-input" type="text" placeholder="saurabh" value={form.username}
                   onChange={(e) => setForm({ ...form, username: e.target.value })} required minLength={3} />
               </div>
               <div className="form-group">
                 <label className="form-label">Display Name</label>
-                <input className="form-input" type="text" placeholder="Tony Stark" value={form.displayName}
+                <input className="form-input" type="text" placeholder="SaurabhLifts" value={form.displayName}
                   onChange={(e) => setForm({ ...form, displayName: e.target.value })} />
               </div>
             </div>
