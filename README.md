@@ -82,7 +82,7 @@ PORT=5000
 MONGO_URI=mongodb://localhost:27017/Liftsy
 JWT_SECRET=your_super_secret_key_change_this_in_production
 JWT_EXPIRE=7d
-OPENAI_API_KEY=sk-your-openai-key-here
+GROQ_API_KEY=sk-your-openai-key-here
 NODE_ENV=development
 CLIENT_URL=http://localhost:3000
 ```
@@ -208,7 +208,7 @@ Liftsy/
 | Backend | Node.js, Express |
 | Database | MongoDB, Mongoose |
 | Auth | JWT + bcrypt |
-| AI | OpenAI GPT-3.5-turbo |
+| AI | GROQ AI |
 | Animations | Framer Motion + CSS |
 
 ---
@@ -228,28 +228,9 @@ Liftsy/
 |----------|----------|-------------|
 | `MONGO_URI` | ✅ | MongoDB connection string |
 | `JWT_SECRET` | ✅ | JWT signing secret (keep secret!) |
-| `OPENAI_API_KEY` | ⭐ | For AI features (optional, but AI pages won't work without it) |
+| `GROQ_API_KEY` | ⭐ | For AI features (optional, but AI pages won't work without it) |
 | `PORT` | ❌ | Backend port (default: 5000) |
 | `CLIENT_URL` | ❌ | Frontend URL for CORS (default: http://localhost:3000) |
-
----
-
-## 🔮 Extending the App
-
-### Add Cloudinary image uploads:
-1. Add `CLOUDINARY_*` env vars
-2. Use multer + cloudinary in user profile route
-3. Add avatar upload to profile page
-
-### Add push notifications:
-1. Use web-push library
-2. Store subscription in User model
-3. Trigger on new followers/likes
-
-### Add workout templates marketplace:
-1. Add `isTemplate: true` flag
-2. Create template browse page
-3. Add "Use Template" → creates workout copy
 
 ---
 
