@@ -31,8 +31,11 @@ router.post('/start', auth, async (req, res) => {
 
 router.get('/active', auth, async (req, res) => {
   try {
-    const session = await Session.findOne({ user: req.user._id, status: 'active' })
-      .populate('exercises.exercise');
+    const session = await Session.findOne({
+      user: req.user._id,
+      status: 'active',
+    }).populate('exercises.exercise');
+
     res.json(session);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -41,13 +44,22 @@ router.get('/active', auth, async (req, res) => {
 
 router.put('/:id', auth, async (req, res) => {
   try {
-    const session = await Session.findOne({ _id: req.params.id, user: req.user._id });
-    if (!session) return res.status(404).json({ message: 'Session not found' });
+    const session = await Session.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
 
     Object.assign(session, req.body);
     await session.save();
 
-    req.app.get('io').to(`user:${req.user._id}`).emit('sessionUpdate', session);
+    req.app
+      .get('io')
+      .to(`user:${req.user._id}`)
+      .emit('sessionUpdate', session);
 
     res.json(session);
   } catch (err) {
@@ -57,24 +69,58 @@ router.put('/:id', auth, async (req, res) => {
 
 router.post('/:id/complete', auth, async (req, res) => {
   try {
-    const session = await Session.findOne({ _id: req.params.id, user: req.user._id });
-    if (!session) return res.status(404).json({ message: 'Session not found' });
+    const session = await Session.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+
+    if (session.status === 'completed') {
+      return res.status(400).json({ message: 'Session already completed' });
+    }
+
+    /*
+     * The frontend keeps the latest set data in React state.
+     * Use that data when completing the session so completed sets,
+     * reps and weights are actually persisted to MongoDB.
+     */
+    if (Array.isArray(req.body.exercises)) {
+      session.exercises = req.body.exercises;
+    }
 
     const endTime = new Date();
-    const duration = Math.floor((endTime - session.startTime) / 1000);
+    const duration = Math.max(
+      0,
+      Math.floor((endTime - session.startTime) / 1000)
+    );
 
-    let totalVolume = 0, totalReps = 0, totalSets = 0;
+    let totalVolume = 0;
+    let totalReps = 0;
+    let totalSets = 0;
+
     const prs = [];
 
     session.exercises.forEach((ex) => {
       ex.sets.forEach((set) => {
-        if (set.completed) {
-          totalSets++;
-          totalReps += set.reps || 0;
-          totalVolume += (set.weight || 0) * (set.reps || 0);
-          if (set.personalRecord) {
-            prs.push({ exerciseName: ex.exerciseName, value: `${set.weight}kg x ${set.reps}` });
-          }
+        if (!set.completed) {
+          return;
+        }
+
+        totalSets += 1;
+        totalReps += Number(set.reps) || 0;
+        totalVolume +=
+          (Number(set.weight) || 0) * (Number(set.reps) || 0);
+
+        if (set.personalRecord) {
+          prs.push({
+            exerciseName: ex.exerciseName,
+            metric: 'weight',
+            value: Number(set.weight) || 0,
+            previous: 0,
+          });
         }
       });
     });
@@ -82,6 +128,7 @@ router.post('/:id/complete', auth, async (req, res) => {
     session.endTime = endTime;
     session.duration = duration;
     session.status = 'completed';
+
     session.stats = {
       totalVolume,
       totalReps,
@@ -90,10 +137,21 @@ router.post('/:id/complete', auth, async (req, res) => {
       personalRecords: prs,
     };
 
-    if (req.body.mood) session.mood = req.body.mood;
-    if (req.body.energyLevel) session.energyLevel = req.body.energyLevel;
-    if (req.body.notes) session.notes = req.body.notes;
-    if (req.body.bodyWeight) session.bodyWeight = req.body.bodyWeight;
+    if (req.body.mood) {
+      session.mood = req.body.mood;
+    }
+
+    if (req.body.energyLevel) {
+      session.energyLevel = req.body.energyLevel;
+    }
+
+    if (req.body.notes) {
+      session.notes = req.body.notes;
+    }
+
+    if (req.body.bodyWeight) {
+      session.bodyWeight = req.body.bodyWeight;
+    }
 
     await session.save();
 
@@ -103,20 +161,28 @@ router.post('/:id/complete', auth, async (req, res) => {
         'stats.totalVolume': totalVolume,
         'stats.totalSessions': 1,
       },
-      $set: { 'stats.lastWorkoutDate': endTime },
+      $set: {
+        'stats.lastWorkoutDate': endTime,
+      },
     });
 
     res.json(session);
   } catch (err) {
+    console.error('Complete session error:', err);
     res.status(500).json({ message: err.message });
   }
 });
 
-
 router.post('/:id/share', auth, async (req, res) => {
   try {
-    const session = await Session.findOne({ _id: req.params.id, user: req.user._id });
-    if (!session) return res.status(404).json({ message: 'Session not found' });
+    const session = await Session.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
 
     const { content, visibility } = req.body;
 
@@ -134,7 +200,14 @@ router.post('/:id/share', auth, async (req, res) => {
         exercises: session.exercises.map((e) => ({
           name: e.exerciseName,
           sets: e.sets.filter((s) => s.completed).length,
-          topSet: e.sets.reduce((top, s) => (!top || (s.weight || 0) > (top.weight || 0) ? s : top), null),
+          topSet: e.sets.reduce(
+            (top, s) =>
+              !top ||
+              (s.weight || 0) > (top.weight || 0)
+                ? s
+                : top,
+            null
+          ),
         })),
         prs: session.stats.personalRecords,
         mood: session.mood,
@@ -145,9 +218,14 @@ router.post('/:id/share', auth, async (req, res) => {
 
     session.sharedAsPost = true;
     session.post = post._id;
+
     await session.save();
 
-    const populatedPost = await Post.findById(post._id).populate('author', 'username displayName avatar');
+    const populatedPost = await Post.findById(post._id).populate(
+      'author',
+      'username displayName avatar'
+    );
+
     res.json(populatedPost);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -157,12 +235,25 @@ router.post('/:id/share', auth, async (req, res) => {
 router.get('/history', auth, async (req, res) => {
   try {
     const { page = 1, limit = 20 } = req.query;
-    const sessions = await Session.find({ user: req.user._id, status: 'completed' })
+
+    const sessions = await Session.find({
+      user: req.user._id,
+      status: 'completed',
+    })
       .sort({ startTime: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));
-    const total = await Session.countDocuments({ user: req.user._id, status: 'completed' });
-    res.json({ sessions, total, pages: Math.ceil(total / limit) });
+
+    const total = await Session.countDocuments({
+      user: req.user._id,
+      status: 'completed',
+    });
+
+    res.json({
+      sessions,
+      total,
+      pages: Math.ceil(total / limit),
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -170,7 +261,15 @@ router.get('/history', auth, async (req, res) => {
 
 router.get('/:id', auth, async (req, res) => {
   try {
-    const session = await Session.findById(req.params.id).populate('exercises.exercise');
+    const session = await Session.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    }).populate('exercises.exercise');
+
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+
     res.json(session);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -180,7 +279,10 @@ router.get('/:id', auth, async (req, res) => {
 router.get('/stats/overview', auth, async (req, res) => {
   try {
     const { period = '30' } = req.query;
-    const since = new Date(Date.now() - Number(period) * 24 * 60 * 60 * 1000);
+
+    const since = new Date(
+      Date.now() - Number(period) * 24 * 60 * 60 * 1000
+    );
 
     const sessions = await Session.find({
       user: req.user._id,
@@ -189,29 +291,55 @@ router.get('/stats/overview', auth, async (req, res) => {
     });
 
     const volumeByDay = {};
-    sessions.forEach((s) => {
-      const day = s.startTime.toISOString().split('T')[0];
-      volumeByDay[day] = (volumeByDay[day] || 0) + (s.stats.totalVolume || 0);
+
+    sessions.forEach((session) => {
+      const day = session.startTime.toISOString().split('T')[0];
+
+      volumeByDay[day] =
+        (volumeByDay[day] || 0) +
+        (session.stats?.totalVolume || 0);
     });
 
     const exerciseFrequency = {};
-    sessions.forEach((s) => {
-      s.exercises.forEach((e) => {
-        exerciseFrequency[e.exerciseName] = (exerciseFrequency[e.exerciseName] || 0) + 1;
+
+    sessions.forEach((session) => {
+      session.exercises.forEach((exercise) => {
+        const completedSets = exercise.sets.filter(
+          (set) => set.completed
+        ).length;
+
+        if (completedSets > 0) {
+          exerciseFrequency[exercise.exerciseName] =
+            (exerciseFrequency[exercise.exerciseName] || 0) + 1;
+        }
       });
     });
 
+    const totalVolume = sessions.reduce(
+      (sum, session) =>
+        sum + (session.stats?.totalVolume || 0),
+      0
+    );
+
+    const avgDuration = sessions.length
+      ? sessions.reduce(
+          (sum, session) =>
+            sum + (session.duration || 0),
+          0
+        ) / sessions.length
+      : 0;
+
     res.json({
       totalSessions: sessions.length,
-      totalVolume: sessions.reduce((sum, s) => sum + (s.stats.totalVolume || 0), 0),
-      avgDuration: sessions.length ? sessions.reduce((sum, s) => sum + (s.duration || 0), 0) / sessions.length : 0,
+      totalVolume,
+      avgDuration,
       volumeByDay,
       exerciseFrequency,
-      sessions: sessions.map((s) => ({
-        date: s.startTime,
-        duration: s.duration,
-        volume: s.stats.totalVolume,
-        mood: s.mood,
+      sessions: sessions.map((session) => ({
+        date: session.startTime,
+        duration: session.duration || 0,
+        volume: session.stats?.totalVolume || 0,
+        mood: session.mood,
       })),
     });
   } catch (err) {

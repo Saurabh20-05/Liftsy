@@ -1,115 +1,226 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { MdFitnessCenter, MdEmail, MdLock } from 'react-icons/md';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
   const [loading, setLoading] = useState(false);
+
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      await login(form.email, form.password);
-      navigate('/dashboard');
+      await login(form.email.trim(), form.password);
       toast.success('Welcome back!');
+      navigate('/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+      toast.error(
+        err.response?.data?.message ||
+        err.response?.data?.errors?.[0]?.msg ||
+        'Unable to sign in'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{
-      minHeight: '100vh', background: 'var(--bg-0)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: 20, position: 'relative', overflow: 'hidden'
-    }}>
-
-      <div style={{
-        position: 'absolute', top: -200, right: -200,
-        width: 600, height: 600,
-        background: 'radial-gradient(circle, rgba(232,255,60,0.06) 0%, transparent 70%)',
-        pointerEvents: 'none'
-      }} />
-      <div style={{
-        position: 'absolute', bottom: -100, left: -100,
-        width: 400, height: 400,
-        background: 'radial-gradient(circle, rgba(74,158,255,0.05) 0%, transparent 70%)',
-        pointerEvents: 'none'
-      }} />
-
-      <div style={{ width: '100%', maxWidth: 420 }} className="animate-scale">
-
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{
-            width: 64, height: 64, background: 'var(--accent)',
-            borderRadius: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: 16, boxShadow: 'var(--glow-accent)'
-          }}>
-            <MdFitnessCenter size={32} color="var(--bg-0)" />
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#0b0e13',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 24,
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 410,
+          animation: 'fadeIn 0.3s ease',
+        }}
+      >
+        <div style={{ marginBottom: 30 }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 30,
+              letterSpacing: 2,
+              color: '#6ea8fe',
+              marginBottom: 10,
+            }}
+          >
+            LIFTSY
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 48, color: 'var(--accent)', letterSpacing: 4 }}>
-            Liftsy
+
+          <h1
+            style={{
+              fontFamily: 'var(--font-condensed)',
+              fontSize: 30,
+              fontWeight: 700,
+              margin: 0,
+              color: '#f1f3f6',
+            }}
+          >
+            Welcome back
           </h1>
-          <p style={{ color: 'var(--text-3)', fontSize: 14, marginTop: 4 }}>
-            Your AI-Powered Fitness Platform
+
+          <p
+            style={{
+              marginTop: 7,
+              color: '#7f8998',
+              fontSize: 14,
+            }}
+          >
+            Pick up where you left off.
           </p>
         </div>
 
-        <div className="card" style={{ padding: 32 }}>
-          <h2 style={{ fontFamily: 'var(--font-condensed)', fontSize: 22, fontWeight: 700, marginBottom: 24 }}>
-            Sign In
-          </h2>
-
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div
+          style={{
+            background: '#151a22',
+            border: '1px solid #252c37',
+            borderRadius: 14,
+            padding: 28,
+          }}
+        >
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 18,
+            }}
+          >
             <div className="form-group">
-              <label className="form-label">Email</label>
-              <div style={{ position: 'relative' }}>
-                <MdEmail style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)' }} size={18} />
-                <input
-                  className="form-input"
-                  style={{ paddingLeft: 40, width: '100%' }}
-                  type="email"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  required
-                />
-              </div>
+              <label className="form-label" htmlFor="email">
+                Email
+              </label>
+
+              <input
+                id="email"
+                name="email"
+                className="form-input"
+                type="email"
+                placeholder="you@example.com"
+                value={form.email}
+                onChange={handleChange}
+                autoComplete="email"
+                required
+              />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Password</label>
-              <div style={{ position: 'relative' }}>
-                <MdLock style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)' }} size={18} />
-                <input
-                  className="form-input"
-                  style={{ paddingLeft: 40, width: '100%' }}
-                  type="password"
-                  placeholder="••••••••"
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  required
-                />
-              </div>
+              <label className="form-label" htmlFor="password">
+                Password
+              </label>
+
+              <input
+                id="password"
+                name="password"
+                className="form-input"
+                type="password"
+                placeholder="Enter your password"
+                value={form.password}
+                onChange={handleChange}
+                autoComplete="current-password"
+                required
+              />
             </div>
 
-            <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading} style={{ marginTop: 8 }}>
-              {loading ? <span className="spinner" /> : 'Sign In'}
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: '100%',
+                height: 48,
+                marginTop: 4,
+                border: 'none',
+                borderRadius: 8,
+                background: '#6ea8fe',
+                color: '#0b0e13',
+                fontFamily: 'var(--font-condensed)',
+                fontSize: 16,
+                fontWeight: 700,
+                cursor: loading ? 'default' : 'pointer',
+                opacity: loading ? 0.7 : 1,
+                transition: 'background 0.2s ease',
+              }}
+            >
+              {loading ? (
+                <span
+                  className="spinner"
+                  style={{
+                    width: 18,
+                    height: 18,
+                    borderColor: 'rgba(11,14,19,0.3)',
+                    borderTopColor: '#0b0e13',
+                  }}
+                />
+              ) : (
+                'Sign In'
+              )}
             </button>
           </form>
 
-          <p style={{ textAlign: 'center', marginTop: 20, color: 'var(--text-3)', fontSize: 14 }}>
+          <div
+            style={{
+              height: 1,
+              background: '#252c37',
+              margin: '24px 0',
+            }}
+          />
+
+          <p
+            style={{
+              textAlign: 'center',
+              margin: 0,
+              color: '#707a89',
+              fontSize: 14,
+            }}
+          >
             Don't have an account?{' '}
-            <Link to="/register" style={{ color: 'var(--accent)', fontWeight: 600 }}>Create one</Link>
+            <Link
+              to="/register"
+              style={{
+                color: '#6ea8fe',
+                fontWeight: 600,
+                textDecoration: 'none',
+              }}
+            >
+              Create one
+            </Link>
           </p>
         </div>
+
+        <p
+          style={{
+            textAlign: 'center',
+            color: '#596271',
+            fontSize: 12,
+            marginTop: 20,
+          }}
+        >
+          Train consistently. See the difference.
+        </p>
       </div>
     </div>
   );
