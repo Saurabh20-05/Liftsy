@@ -1,243 +1,683 @@
-# 🏋️ Liftsy — AI-Powered Fitness Social Platform
+# 🏋️ Liftsy
 
-A full-stack MERN + AI/ML fitness platform with social features, real-time workout tracking, and an intelligent coaching system.
+> **Train smarter. Track everything. Improve consistently.**
+
+Liftsy is a full-stack **AI-powered fitness and social platform** built to make strength training more structured, measurable, and engaging.
+
+It combines workout planning, live session tracking, progress analytics, AI-powered coaching, and a social fitness community into one platform.
 
 ---
 
-## ✨ Features
+## ✨ What is Liftsy?
+
+Liftsy lets users:
+
+- Build and manage personalized workout plans
+- Browse a pre-seeded exercise library
+- Track workouts set by set in real time
+- Record weight, reps, RPE, rest, mood, and energy
+- Automatically calculate workout statistics and detect PRs
+- Analyze completed sessions with AI
+- Get progressive-overload recommendations
+- Ask an AI fitness coach questions
+- Discover and share workouts
+- Follow other athletes and interact with their posts
+- Track long-term training progress
+- Compete through a volume-based leaderboard
+
+The platform is designed around the complete training journey:
+
+**Plan → Train → Track → Analyze → Improve → Share**
+
+---
+
+## 🚀 Live Application
+
+**Frontend:** https://liftsy.vercel.app
+
+**Backend API:** https://liftsy-backend.onrender.com
+
+---
+
+## 🎯 Core Features
 
 ### 💪 Workout Management
-- Create, edit, delete custom workout plans
-- Exercise library with 30+ exercises pre-seeded
-- Set/rep/weight/rest timer tracking per exercise
-- AI-generated workout plans via GPT
 
-### 📊 Session Tracking
-- Live workout session with real-time timer
-- Per-set logging: weight, reps, RPE, rest timer
-- Animated rest countdown timer
-- Auto-detect personal records (PRs)
-- Session completion with mood & energy rating
+Create and manage complete workout plans from one place.
 
-### 🤖 AI / ML Features
-- **AI Workout Generator** — describe a goal, get a full plan
-- **AI Session Analyzer** — post-workout analysis with strengths & improvements
-- **AI Coach Chat** — GPT-powered personal fitness coach
-- **Progressive Overload Suggestions** — smart weight/rep recommendations
-- **Form Tips** — exercise-specific cues on demand
-
-### 📱 Social Platform
-- Twitter/Instagram-style social feed
-- Post workout summaries with stats
-- Like, react (🔥💪❤️😮👏🦁), and comment
-- Follow / unfollow athletes
-- User profiles with stats, badges, posts
-- Real-time notifications via Socket.IO
-- Explore page: discover workouts & athletes
-
-### 📈 Progress Analytics
-- Volume over time chart (Chart.js)
-- Session duration trends
-- Top exercises frequency
-- Mood distribution pie chart
-- 7/30/90 day period selector
-
-### 🏆 Leaderboard
-- Ranked by total training volume
-- Podium display for top 3
-- Your personal rank highlighted
+- Create custom workouts
+- Edit existing workout plans
+- Delete workouts
+- Add multiple exercises
+- Configure sets, reps, weight, and rest
+- Public/private workout visibility
+- Explore public workouts
+- AI-generated workout plans
+- Exercise search and filtering
+- 30+ pre-seeded exercises
 
 ---
 
-## 🚀 Quick Start
+### 🔥 Live Workout Tracking
+
+Track an actual training session while you work out.
+
+- Real-time workout timer
+- Exercise-by-exercise tracking
+- Set-by-set logging
+- Weight and rep tracking
+- RPE tracking
+- Rest timer
+- Animated rest countdown
+- Personal record detection
+- Live workout statistics
+- Mood and energy rating after completion
+
+A completed session stores the actual training data rather than only the original workout template.
+
+---
+
+### 📊 Training Analytics
+
+Turn workout history into measurable progress.
+
+- Total training volume
+- Workout/session count
+- Average session duration
+- Volume trends
+- Session duration trends
+- Exercise frequency
+- Mood distribution
+- 7 / 30 / 90 day analysis
+- Historical session data
+- Personal training statistics
+
+Charts are powered by **Chart.js**.
+
+---
+
+## 🤖 AI-Powered Training
+
+Liftsy integrates AI directly into the training workflow.
+
+### AI Workout Generator
+
+Describe your goal and the platform can generate a structured workout plan.
+
+Examples:
+
+- Muscle building
+- Strength training
+- Fat loss
+- Beginner training
+- Specific muscle-group training
+
+---
+
+### AI Session Analyzer
+
+After completing a workout, Liftsy can analyze the session and provide:
+
+- Training summary
+- Strengths
+- Areas for improvement
+- Training observations
+- Practical recommendations
+
+---
+
+### AI Coach
+
+A dedicated conversational fitness coach that understands the user's training context.
+
+Users can ask questions about:
+
+- Workout planning
+- Exercise selection
+- Training progression
+- Recovery
+- Training consistency
+- Progressive overload
+- General fitness guidance
+
+---
+
+### Progressive Overload Suggestions
+
+Liftsy can provide training progression recommendations based on previous performance.
+
+The goal is to turn historical workout data into actionable next-session suggestions.
+
+---
+
+### Exercise Form Tips
+
+Get exercise-specific technique guidance directly from the platform.
+
+---
+
+## 📱 Social Fitness Platform
+
+Liftsy is not only a workout tracker — it also includes a fitness-focused social layer.
+
+### Social Feed
+
+Users can share completed workout sessions and interact with other athletes.
+
+- Workout posts
+- Workout statistics
+- Likes
+- Reactions
+- Comments
+- Follow/unfollow
+- Public posts
+- Following feed
+- Explore feed
+
+Available reactions include:
+
+**🔥 💪 ❤️ 😮 👏 🦁**
+
+---
+
+### 👤 Athlete Profiles
+
+Each profile can display:
+
+- Display name
+- Username
+- Avatar
+- Training statistics
+- Workout activity
+- Badges
+- Social posts
+- Followers/following information
+
+---
+
+### 🔎 Explore
+
+Discover content across the platform.
+
+#### Workouts
+
+- Public workout plans
+- Search
+- Category filtering
+- Difficulty filtering
+- Sorting
+
+#### Athletes
+
+- Search users
+- Discover other athletes
+- View profiles
+- Follow athletes
+
+---
+
+### 🔔 Real-Time Notifications
+
+Liftsy uses **Socket.IO** for real-time application events and notifications.
+
+---
+
+## 🏆 Leaderboard
+
+Compete with other athletes based on total training volume.
+
+Features:
+
+- Global volume ranking
+- Top 3 podium
+- Personal rank
+- Training-volume comparison
+
+---
+
+## 🔐 Authentication & Security
+
+Liftsy uses:
+
+- JWT authentication
+- Password hashing with bcrypt
+- Protected API routes
+- Authenticated frontend routes
+- Axios authentication interceptor
+- Environment-based secrets
+- CORS configuration
+
+Authentication flow:
+
+**Register → Login → JWT → Protected Routes → Authenticated API Requests**
+
+---
+
+# 🏗️ Architecture
+
+```text
+                         ┌─────────────────────┐
+                         │      Liftsy UI      │
+                         │   React Frontend    │
+                         └──────────┬──────────┘
+                                    │
+                              HTTPS / REST
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │    Express API      │
+                         │   Node.js Backend   │
+                         └──────┬──────┬───────┘
+                                │      │
+                       ┌────────┘      └──────────┐
+                       ▼                          ▼
+              ┌─────────────────┐        ┌─────────────────┐
+              │ MongoDB Atlas   │        │    GROQ AI      │
+              │  Application DB │        │ AI capabilities │
+              └─────────────────┘        └─────────────────┘
+
+                         ┌─────────────────┐
+                         │    Socket.IO    │
+                         │ Real-time events│
+                         └─────────────────┘
+```
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 18 |
+| Routing | React Router 6 |
+| Styling | Custom CSS Design System |
+| Icons | Lucide React |
+| Charts | Chart.js |
+| Backend | Node.js |
+| API | Express.js |
+| Database | MongoDB |
+| ODM | Mongoose |
+| Authentication | JWT + bcrypt |
+| AI | GROQ AI |
+| Real-time | Socket.IO |
+| HTTP Client | Axios |
+| Notifications | React Hot Toast |
+| Date Utilities | date-fns |
+| Deployment | Vercel + Render + MongoDB Atlas |
+
+## 📁 Project Structure
+
+```text
+Liftsy/
+│
+├── backend/
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Workout.js
+│   │   ├── Session.js
+│   │   ├── Exercise.js
+│   │   └── Post.js
+│   │
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── workouts.js
+│   │   ├── sessions.js
+│   │   ├── exercises.js
+│   │   ├── social.js
+│   │   ├── users.js
+│   │   ├── ai.js
+│   │   └── feed.js
+│   │
+│   ├── middleware/
+│   │   └── auth.js
+│   │
+│   ├── utils/
+│   │   ├── seed.js
+│   │   └── socketHandlers.js
+│   │
+│   └── server.js
+│
+├── frontend/
+│   └── src/
+│       ├── components/
+│       │   └── layout/
+│       │       ├── Layout.js
+│       │       └── Sidebar.js
+│       │
+│       ├── context/
+│       │   ├── AuthContext.js
+│       │   └── SocketContext.js
+│       │
+│       ├── pages/
+│       │   ├── LoginPage.js
+│       │   ├── RegisterPage.js
+│       │   ├── DashboardPage.js
+│       │   ├── WorkoutsPage.js
+│       │   ├── WorkoutDetailPage.js
+│       │   ├── ActiveSessionPage.js
+│       │   ├── SessionDetailPage.js
+│       │   ├── SessionHistoryPage.js
+│       │   ├── FeedPage.js
+│       │   ├── ExplorePage.js
+│       │   ├── ProfilePage.js
+│       │   ├── AiCoachPage.js
+│       │   ├── ProgressPage.js
+│       │   └── LeaderboardPage.js
+│       │
+│       ├── utils/
+│       │   └── api.js
+│       │
+│       └── styles/
+│           └── global.css
+│
+├── package.json
+└── README.md
+```
+
+## 🔌 API Overview
+
+### Authentication
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | /api/auth/register | Register a user |
+| POST | /api/auth/login | Authenticate user |
+| GET | /api/auth/me | Get current user |
+| PUT | /api/auth/profile | Update profile |
+
+### Workouts
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | /api/workouts/explore | Explore public workouts |
+| GET | /api/workouts/mine | Get user's workouts |
+| GET | /api/workouts/:id | Get workout |
+| POST | /api/workouts | Create workout |
+| PUT | /api/workouts/:id | Update workout |
+| DELETE | /api/workouts/:id | Delete workout |
+| POST | /api/workouts/:id/save | Save workout |
+| POST | /api/workouts/:id/rate | Rate workout |
+
+### Exercises
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | /api/exercises | Exercise library |
+| GET | /api/exercises/:id | Exercise details |
+| POST | /api/exercises | Create custom exercise |
+| GET | /api/exercises/meta/muscles | Muscle filters |
+| GET | /api/exercises/meta/equipment | Equipment filters |
+
+### Sessions
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | /api/sessions/start | Start workout session |
+| GET | /api/sessions/active | Get active session |
+| PUT | /api/sessions/:id | Update session |
+| POST | /api/sessions/:id/complete | Complete session |
+| POST | /api/sessions/:id/share | Share session |
+| GET | /api/sessions/history | Session history |
+| GET | /api/sessions/:id | Session details |
+| GET | /api/sessions/stats/overview | Training statistics |
+
+### Social
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | /api/social/feed | Following feed |
+| GET | /api/social/explore | Explore social posts |
+| POST | /api/social/post | Create post |
+| POST | /api/social/post/:id/like | Like post |
+| POST | /api/social/post/:id/react | React to post |
+| POST | /api/social/post/:id/comment | Comment |
+| DELETE | /api/social/post/:id/comment/:commentId | Delete comment |
+
+### Users
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | /api/users/search | Search athletes |
+| GET | /api/users/:username | View profile |
+| POST | /api/users/:id/follow | Follow/unfollow |
+| GET | /api/users/me/notifications | Get notifications |
+| PUT | /api/users/me/notifications/read | Mark notifications read |
+| GET | /api/users/leaderboard/volume | Volume leaderboard |
+
+### AI
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | /api/ai/generate-workout | Generate workout |
+| POST | /api/ai/analyze-session/:id | Analyze session |
+| POST | /api/ai/coach | AI coach conversation |
+| POST | /api/ai/form-tips | Exercise form tips |
+| POST | /api/ai/suggest-progression | Progressive overload |
+
+## ⚙️ Local Development
 
 ### Prerequisites
+
 - Node.js 18+
-- MongoDB (local or MongoDB Atlas)
-- OpenAI API key (for AI features — optional but recommended)
+- npm
+- MongoDB local instance or MongoDB Atlas
+- GROQ API key for AI functionality
 
-### 1. Clone & Install
-
-```bash
-git clone <your-repo>
+### 1. Clone the Repository
+```
+git clone https://github.com/Saurabh20-05/Liftsy.git
 cd Liftsy
+```
 
-# Install root dependencies
+### 2. Install Dependencies
+```
 npm install
-
-# Install all dependencies (backend + frontend)
 npm run install:all
 ```
 
-### 2. Configure Environment
+### 3. Configure Backend Environment
 
-```bash
-cd backend
-cp .env.example .env
+Create:
+
+backend/.env
+
+Example:
 ```
-
-Edit `backend/.env`:
-```env
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/Liftsy
-JWT_SECRET=your_super_secret_key_change_this_in_production
+JWT_SECRET=your_secret_key
 JWT_EXPIRE=7d
-GROQ_API_KEY=sk-your-openai-key-here
+GROQ_API_KEY=your_groq_api_key
 NODE_ENV=development
 CLIENT_URL=http://localhost:3000
 ```
 
-### 3. Seed Exercise Library
+Never commit .env files or API keys to GitHub.
 
-```bash
-npm run seed
+### 4. Seed the Exercise Library
+
+From the backend directory:
+```
+cd backend
+node utils/seed.js
 ```
 
-This seeds 30+ exercises into your database.
+The seed script populates the exercise library with 30+ exercises.
 
-### 4. Run Development Servers
+### 5. Start the Application
 
-```bash
-# From root — runs both backend (port 5000) and frontend (port 3000)
+From the project root:
+```
 npm run dev
 ```
 
-Or run separately:
-```bash
-npm run start:backend   # Backend only
-npm run start:frontend  # Frontend only
+Or start the services independently:
+```
+npm run start:backend
+npm run start:frontend
 ```
 
-### 5. Open App
+### 6. Open the Application
 
-Visit: **http://localhost:3000**
+http://localhost:3000
 
-Register an account and start training! 🎉
+## 🌐 Production Deployment
 
----
+The current production architecture uses:
 
-## 📁 Project Structure
+- Frontend → Vercel
+- Backend → Render
+- Database → MongoDB Atlas
 
+### Frontend Environment
+
+For production, the frontend API URL should point to the deployed backend:
 ```
-Liftsy/
-├── backend/
-│   ├── models/
-│   │   ├── User.js          # User schema with stats, badges, social
-│   │   ├── Workout.js       # Workout plans with exercises & sets
-│   │   ├── Session.js       # Training sessions with real-time data
-│   │   ├── Exercise.js      # Exercise library
-│   │   └── Post.js          # Social posts with reactions & comments
-│   ├── routes/
-│   │   ├── auth.js          # Register, login, profile
-│   │   ├── workouts.js      # CRUD + save + rate
-│   │   ├── sessions.js      # Start, update, complete, share, stats
-│   │   ├── exercises.js     # Library with search & filters
-│   │   ├── social.js        # Feed, posts, likes, reactions, comments
-│   │   ├── users.js         # Profiles, follow, leaderboard
-│   │   ├── ai.js            # Generate, analyze, coach, form tips
-│   │   └── feed.js          # Public feed
-│   ├── middleware/
-│   │   └── auth.js          # JWT middleware
-│   ├── utils/
-│   │   ├── seed.js          # Exercise library seeder
-│   │   └── socketHandlers.js # Real-time socket events
-│   └── server.js            # Express + Socket.IO entry point
-│
-└── frontend/
-    └── src/
-        ├── pages/
-        │   ├── LoginPage.js
-        │   ├── RegisterPage.js
-        │   ├── DashboardPage.js       # Home hub with stats
-        │   ├── WorkoutsPage.js        # Manage workouts + AI generate
-        │   ├── WorkoutDetailPage.js   # View workout plan
-        │   ├── ActiveSessionPage.js   # 🔥 Live workout tracker
-        │   ├── SessionDetailPage.js   # Post-session + AI analysis
-        │   ├── SessionHistoryPage.js  # Grouped history log
-        │   ├── FeedPage.js            # Social feed
-        │   ├── ExplorePage.js         # Discover workouts & athletes
-        │   ├── ProfilePage.js         # User profile
-        │   ├── AiCoachPage.js         # GPT chat coach
-        │   ├── ProgressPage.js        # Analytics charts
-        │   └── LeaderboardPage.js     # Rankings
-        ├── components/
-        │   └── layout/
-        │       ├── Layout.js
-        │       └── Sidebar.js
-        ├── context/
-        │   ├── AuthContext.js         # Auth state
-        │   └── SocketContext.js       # Real-time connection
-        ├── utils/
-        │   └── api.js                 # Axios + all API calls
-        └── styles/
-            └── global.css             # Design system
+REACT_APP_API_URL=https://liftsy-backend.onrender.com/api
 ```
 
----
+### Backend Environment
 
-## 🔑 API Overview
+Render should contain the production environment variables:
+```
+PORT=10000
+MONGO_URI=<mongodb-atlas-connection-string>
+JWT_SECRET=<production-secret>
+GROQ_API_KEY=<groq-api-key>
+NODE_ENV=production
+CLIENT_URL=https://liftsy.vercel.app
+```
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| POST | `/api/auth/register` | Register user |
-| POST | `/api/auth/login` | Login |
-| GET | `/api/auth/me` | Current user |
-| GET | `/api/workouts/explore` | Public workouts |
-| POST | `/api/workouts` | Create workout |
-| POST | `/api/sessions/start` | Start session |
-| PUT | `/api/sessions/:id` | Update live session |
-| POST | `/api/sessions/:id/complete` | Finish session |
-| POST | `/api/sessions/:id/share` | Share to feed |
-| GET | `/api/social/feed` | Following feed |
-| POST | `/api/social/post/:id/like` | Like post |
-| POST | `/api/social/post/:id/react` | React to post |
-| POST | `/api/ai/generate-workout` | AI workout plan |
-| POST | `/api/ai/analyze-session/:id` | AI session analysis |
-| POST | `/api/ai/coach` | AI coach chat |
-| GET | `/api/users/leaderboard/volume` | Volume leaderboard |
+Production secrets should be configured through the deployment platform's environment-variable system rather than committed to the repository.
 
----
+## 🧠 Application Flow
 
-## 🛠 Tech Stack
+### Authentication
+```
+Register
+   ↓
+Password hashed with bcrypt
+   ↓
+User stored in MongoDB
+   ↓
+JWT generated
+   ↓
+Frontend stores authentication state
+   ↓
+Protected API requests
+```
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, React Router 6, Chart.js |
-| Styling | Custom CSS design system (dark theme) |
-| Real-time | Socket.IO |
-| Backend | Node.js, Express |
-| Database | MongoDB, Mongoose |
-| Auth | JWT + bcrypt |
-| AI | GROQ AI |
-| Animations | Framer Motion + CSS |
+### Workout Flow
+```
+Create / Explore Workout
+        ↓
+Select Workout
+        ↓
+Start Session
+        ↓
+Log Sets
+        ↓
+Track Timer + Rest
+        ↓
+Complete Session
+        ↓
+Calculate Training Statistics
+        ↓
+Store Session
+        ↓
+Progress Analytics
+        ↓
+Optional AI Analysis
+        ↓
+Optional Share to Feed
+```
 
----
+### Social Flow
+```
+Complete Workout
+      ↓
+Share Session
+      ↓
+Social Post
+      ↓
+Feed
+      ↓
+Likes / Reactions / Comments
+      ↓
+Notifications
+```
 
-## 🎨 Design System
+## 🎨 Current Design
 
-- **Colors**: Dark athletic theme with electric yellow accent (`#e8ff3c`)
-- **Typography**: Bebas Neue (display), Barlow Condensed (UI), Barlow (body)
-- **Components**: Cards, modals, badges, stat cards, tab bars, number inputs
-- **Responsive**: Mobile-first with collapsible sidebar
+Liftsy uses a custom dark fitness-focused design system with:
 
----
+- Dark UI
+- Clean horizontal navigation
+- Responsive layouts
+- Lucide icons
+- Reusable cards and panels
+- Workout-focused controls
+- Interactive charts
+- Modal-based workflows
+- Responsive mobile navigation
+- Consistent typography and spacing
+- Subtle borders and restrained visual effects
 
-## ⚙️ Environment Variables
+The interface is intentionally designed to prioritize clarity, usability, and training data over unnecessary visual complexity.
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `MONGO_URI` | ✅ | MongoDB connection string |
-| `JWT_SECRET` | ✅ | JWT signing secret (keep secret!) |
-| `GROQ_API_KEY` | ⭐ | For AI features (optional, but AI pages won't work without it) |
-| `PORT` | ❌ | Backend port (default: 5000) |
-| `CLIENT_URL` | ❌ | Frontend URL for CORS (default: http://localhost:3000) |
+## 📈 Data & Training Metrics
 
----
+Liftsy tracks meaningful training information including:
 
-## 📝 License
+- Total volume
+- Sets
+- Reps
+- Weight
+- RPE
+- Session duration
+- Workout frequency
+- Exercise frequency
+- Personal records
+- Mood
+- Energy
+- Training streaks
 
-MIT — free to use, modify, and distribute.
+This data powers the dashboard, history, progress analytics, leaderboard, and AI features.
 
----
+## 🔮 Future Improvements
 
-Built with 💪 by Liftsy
+Potential future development areas include:
+
+- Advanced recommendation models
+- Exercise video demonstrations
+- Wearable/device integrations
+- More detailed recovery analytics
+- Advanced personal-record analytics
+- Workout templates
+- Training program scheduling
+- Richer social discovery
+- Push notifications
+- More granular privacy controls
+- Enhanced AI personalization
+
+## 🔒 Security Notes
+
+Never commit:
+
+- .env
+- API keys
+- JWT secrets
+- Database passwords
+- Production credentials
+
+Use environment variables for all secrets.
+
+If a production credential is accidentally exposed, revoke/rotate it immediately.
+
+## 📄 License
+
+MIT License.
+
+## 💪 Built with Liftsy
+
+Liftsy brings workouts, tracking, AI coaching, analytics, and social fitness together in one platform.
+
+Plan your training. Track your work. Understand your progress. Keep getting stronger.
