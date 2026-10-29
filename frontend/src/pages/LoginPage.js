@@ -1,39 +1,71 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [form, setForm] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setForm((current) => ({
+  //     ...current,
+  //     [name]: value,
+  //   }));
+  // };
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setForm((current) => ({
       ...current,
       [name]: value,
     }));
+
+    setErrorMessage("");
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   try {
+  //     await login(form.email.trim(), form.password);
+  //     toast.success("Welcome back!");
+  //     navigate("/dashboard");
+  //   } catch (err) {
+  //     toast.error(
+  //       err.response?.data?.message ||
+  //         err.response?.data?.errors?.[0]?.msg ||
+  //         "Unable to sign in",
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage("");
 
     try {
       await login(form.email.trim(), form.password);
-      toast.success('Welcome back!');
-      navigate('/dashboard');
+      toast.success("Welcome back!");
+      navigate("/dashboard");
     } catch (err) {
-      toast.error(
+      console.error("Login failed:", err.response?.data || err.message);
+
+      setErrorMessage(
         err.response?.data?.message ||
-        err.response?.data?.errors?.[0]?.msg ||
-        'Unable to sign in'
+          err.response?.data?.errors?.[0]?.msg ||
+          "Invalid email or password",
       );
     } finally {
       setLoading(false);
@@ -43,28 +75,28 @@ export default function LoginPage() {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        background: '#0b0e13',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        minHeight: "100vh",
+        background: "#0b0e13",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         padding: 24,
       }}
     >
       <div
         style={{
-          width: '100%',
+          width: "100%",
           maxWidth: 410,
-          animation: 'fadeIn 0.3s ease',
+          animation: "fadeIn 0.3s ease",
         }}
       >
         <div style={{ marginBottom: 30 }}>
           <div
             style={{
-              fontFamily: 'var(--font-display)',
+              fontFamily: "var(--font-display)",
               fontSize: 30,
               letterSpacing: 2,
-              color: '#6ea8fe',
+              color: "#6ea8fe",
               marginBottom: 10,
             }}
           >
@@ -73,11 +105,11 @@ export default function LoginPage() {
 
           <h1
             style={{
-              fontFamily: 'var(--font-condensed)',
+              fontFamily: "var(--font-condensed)",
               fontSize: 30,
               fontWeight: 700,
               margin: 0,
-              color: '#f1f3f6',
+              color: "#f1f3f6",
             }}
           >
             Welcome back
@@ -86,7 +118,7 @@ export default function LoginPage() {
           <p
             style={{
               marginTop: 7,
-              color: '#7f8998',
+              color: "#7f8998",
               fontSize: 14,
             }}
           >
@@ -96,8 +128,8 @@ export default function LoginPage() {
 
         <div
           style={{
-            background: '#151a22',
-            border: '1px solid #252c37',
+            background: "#151a22",
+            border: "1px solid #252c37",
             borderRadius: 14,
             padding: 28,
           }}
@@ -105,11 +137,26 @@ export default function LoginPage() {
           <form
             onSubmit={handleSubmit}
             style={{
-              display: 'flex',
-              flexDirection: 'column',
+              display: "flex",
+              flexDirection: "column",
               gap: 18,
             }}
           >
+            {errorMessage && (
+              <div
+                role="alert"
+                style={{
+                  padding: "12px 14px",
+                  borderRadius: 8,
+                  background: "rgba(239, 68, 68, 0.12)",
+                  border: "1px solid rgba(239, 68, 68, 0.4)",
+                  color: "#f87171",
+                  fontSize: 14,
+                }}
+              >
+                {errorMessage}
+              </div>
+            )}
             <div className="form-group">
               <label className="form-label" htmlFor="email">
                 Email
@@ -150,19 +197,19 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               style={{
-                width: '100%',
+                width: "100%",
                 height: 48,
                 marginTop: 4,
-                border: 'none',
+                border: "none",
                 borderRadius: 8,
-                background: '#6ea8fe',
-                color: '#0b0e13',
-                fontFamily: 'var(--font-condensed)',
+                background: "#6ea8fe",
+                color: "#0b0e13",
+                fontFamily: "var(--font-condensed)",
                 fontSize: 16,
                 fontWeight: 700,
-                cursor: loading ? 'default' : 'pointer',
+                cursor: loading ? "default" : "pointer",
                 opacity: loading ? 0.7 : 1,
-                transition: 'background 0.2s ease',
+                transition: "background 0.2s ease",
               }}
             >
               {loading ? (
@@ -171,12 +218,12 @@ export default function LoginPage() {
                   style={{
                     width: 18,
                     height: 18,
-                    borderColor: 'rgba(11,14,19,0.3)',
-                    borderTopColor: '#0b0e13',
+                    borderColor: "rgba(11,14,19,0.3)",
+                    borderTopColor: "#0b0e13",
                   }}
                 />
               ) : (
-                'Sign In'
+                "Sign In"
               )}
             </button>
           </form>
@@ -184,26 +231,26 @@ export default function LoginPage() {
           <div
             style={{
               height: 1,
-              background: '#252c37',
-              margin: '24px 0',
+              background: "#252c37",
+              margin: "24px 0",
             }}
           />
 
           <p
             style={{
-              textAlign: 'center',
+              textAlign: "center",
               margin: 0,
-              color: '#707a89',
+              color: "#707a89",
               fontSize: 14,
             }}
           >
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <Link
               to="/register"
               style={{
-                color: '#6ea8fe',
+                color: "#6ea8fe",
                 fontWeight: 600,
-                textDecoration: 'none',
+                textDecoration: "none",
               }}
             >
               Create one
@@ -213,8 +260,8 @@ export default function LoginPage() {
 
         <p
           style={{
-            textAlign: 'center',
-            color: '#596271',
+            textAlign: "center",
+            color: "#596271",
             fontSize: 12,
             marginTop: 20,
           }}

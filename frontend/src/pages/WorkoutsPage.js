@@ -29,6 +29,60 @@ const CATEGORIES = [
 ];
 const DIFFICULTIES = ["beginner", "intermediate", "advanced", "elite"];
 
+const normalizeExerciseName = (name = "") =>
+  name.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+const findMatchingExercise = (item, allExercises) => {
+  const exerciseId =
+    typeof item.exercise === "object" && item.exercise !== null
+      ? item.exercise._id
+      : item.exercise;
+
+  // First, match using the database ID.
+  if (exerciseId) {
+    const byId = allExercises.find(
+      (exercise) => String(exercise._id) === String(exerciseId)
+    );
+
+    if (byId) return byId;
+  }
+
+  // Match using the saved exercise name or its aliases.
+  const savedName = normalizeExerciseName(
+    item.exerciseName ||
+      (typeof item.exercise === "object" ? item.exercise?.name : "")
+  );
+
+  const exactMatch = allExercises.find((exercise) =>
+    [
+      exercise.name,
+      ...(exercise.alternativeNames || []),
+    ].some((name) => normalizeExerciseName(name) === savedName)
+  );
+
+  if (exactMatch) return exactMatch;
+
+  // Known legacy names: map only to equivalent exercises.
+  const aliases = {
+    bentoverrow: ["bentoverbarbellrow", "bentoverrow"],
+    singlearmdumbbellrow: ["onearmdumbbellrow", "singlearmdumbbellrow"],
+    dumbbellpullovers: ["dumbbellpullover", "dumbbellpullovers"],
+    renegaderow: ["renegaderow"],
+    reversefly: ["reversedumbbellfly", "dumbbellreversefly"],
+  };
+
+  const possibleNames = aliases[savedName] || [];
+
+  return allExercises.find((exercise) =>
+    [
+      exercise.name,
+      ...(exercise.alternativeNames || []),
+    ].some((name) =>
+      possibleNames.includes(normalizeExerciseName(name))
+    )
+  );
+};
+
 function AIGenerateModal({ onCreated, onClose }) {
   const [form, setForm] = useState({
     goal: "",
@@ -255,18 +309,57 @@ function AIGenerateModal({ onCreated, onClose }) {
 }
 
 function WorkoutModal({ workout: initial, onSaved, onClose }) {
-  const [form, setForm] = useState(
-    initial || {
-      name: "",
-      description: "",
-      category: "strength",
-      difficulty: "intermediate",
-      isPublic: true,
-      muscleGroups: [],
-      tags: [],
-      exercises: [],
-    },
-  );
+  // const [form, setForm] = useState(
+  //   initial || {
+  //     name: "",
+  //     description: "",
+  //     category: "strength",
+  //     difficulty: "intermediate",
+  //     isPublic: true,
+  //     muscleGroups: [],
+  //     tags: [],
+  //     exercises: [],
+  //   },
+  // );
+  const [form, setForm] = useState(() => {
+    if (!initial) {
+      return {
+        name: "",
+        description: "",
+        category: "strength",
+        difficulty: "intermediate",
+        isPublic: true,
+        muscleGroups: [],
+        tags: [],
+        exercises: [],
+      };
+    }
+
+    return {
+      ...initial,
+      exercises: (initial.exercises || []).map((item) => ({
+        ...item,
+
+        // Preserve the actual Exercise ID when populated or unpopulated.
+        exercise:
+          typeof item.exercise === "object" && item.exercise !== null
+            ? item.exercise._id
+            : item.exercise,
+
+        // Preserve the display name separately.
+        exerciseName:
+          item.exerciseName ||
+          (typeof item.exercise === "object" ? item.exercise?.name : "") ||
+          "",
+
+        sets: (item.sets || []).map((set, index) => ({
+          ...set,
+          setNumber: set.setNumber || index + 1,
+          restTime: set.restTime ?? 90,
+        })),
+      })),
+    };
+  });
 
   const [exerciseSearch, setExerciseSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -278,7 +371,24 @@ function WorkoutModal({ workout: initial, onSaved, onClose }) {
     const loadExercises = async () => {
       try {
         const response = await exercisesAPI.list({ limit: 100 });
-        const exercises = Array.isArray(response.data) ? response.data : [];
+        const data = response.data;
+
+        const exercises = Array.isArray(data)
+          ? data
+          : Array.isArray(data.exercises)
+            ? data.exercises
+            : Array.isArray(data.data)
+              ? data.data
+              : [];
+
+        console.log(
+  "EXERCISE LIBRARY:",
+  exercises.map((e) => ({
+    id: e._id,
+    name: e.name,
+    alternativeNames: e.alternativeNames,
+  }))
+);
 
         setAllExercises(exercises);
       } catch (error) {
@@ -404,6 +514,45 @@ function WorkoutModal({ workout: initial, onSaved, onClose }) {
     });
   };
 
+  // const handleSave = async () => {
+  //   if (!form.name.trim()) {
+  //     return toast.error("Workout name required");
+  //   }
+
+  //   if (form.exercises.length === 0) {
+  //     return toast.error("Add at least one exercise");
+  //   }
+
+  //   setSaving(true);
+
+  //   try {
+  //     console.log(
+  //       "Exercises being saved:",
+  //       form.exercises.map((item) => ({
+  //         exercise: item.exercise,
+  //         exerciseName: item.exerciseName,
+  //         hasId: Boolean(
+  //           typeof item.exercise === "string"
+  //             ? item.exercise
+  //             : item.exercise?._id,
+  //         ),
+  //       })),
+  //     );
+  //     const response = initial?._id
+  //       ? await workoutsAPI.update(initial._id, form)
+  //       : await workoutsAPI.create(form);
+
+  //     toast.success(initial ? "Workout updated!" : "Workout created!");
+
+  //     onSaved(response.data);
+  //     onClose();
+  //   } catch (error) {
+  //     toast.error(error.response?.data?.message || "Failed to save workout");
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
+
   const handleSave = async () => {
     if (!form.name.trim()) {
       return toast.error("Workout name required");
@@ -416,15 +565,65 @@ function WorkoutModal({ workout: initial, onSaved, onClose }) {
     setSaving(true);
 
     try {
+      const payload = {
+        ...form,
+        exercises: form.exercises.map((item) => {
+          // Recover the Exercise ID if it is missing.
+          const exerciseId =
+            typeof item.exercise === "object" && item.exercise !== null
+              ? item.exercise._id
+              : item.exercise;
+
+          // const matchedExercise = allExercises.find(
+          //   (exercise) =>
+          //     exercise._id === exerciseId ||
+          //     exercise.name?.toLowerCase() === item.exerciseName?.toLowerCase(),
+          // );
+          const matchedExercise = findMatchingExercise(item, allExercises);
+          console.log("EXERCISE MATCH DEBUG:", {
+  savedName: item.exerciseName,
+  savedId: item.exercise,
+  matchedName: matchedExercise?.name,
+  matchedId: matchedExercise?._id,
+});
+
+          return {
+            ...item,
+            exercise: exerciseId || matchedExercise?._id,
+            exerciseName: item.exerciseName || matchedExercise?.name,
+          };
+        }),
+      };
+
+      // Stop before sending invalid exercise entries.
+      const invalidExercises = payload.exercises.filter(
+        (item) => !item.exercise,
+      );
+
+      if (invalidExercises.length > 0) {
+        return toast.error(
+          `Could not find exercise: ${invalidExercises
+            .map((item) => item.exerciseName || "Unknown")
+            .join(", ")}. Remove it and add it again using exercise search.`,
+        );
+      }
+
+      console.log("Workout ID:", initial?._id);
+      console.log("Exercises being saved:", payload.exercises);
+
       const response = initial?._id
-        ? await workoutsAPI.update(initial._id, form)
-        : await workoutsAPI.create(form);
+        ? await workoutsAPI.update(initial._id, payload)
+        : await workoutsAPI.create(payload);
 
-      toast.success(initial ? "Workout updated!" : "Workout created!");
-
+      toast.success(initial?._id ? "Workout updated!" : "Workout created!");
       onSaved(response.data);
       onClose();
     } catch (error) {
+      console.error(
+        "Save workout error:",
+        error.response?.data || error.message,
+      );
+
       toast.error(error.response?.data?.message || "Failed to save workout");
     } finally {
       setSaving(false);

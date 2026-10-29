@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Workout = require('../models/Workout');
 const { auth, optionalAuth } = require('../middleware/auth');
+const Exercise = require('../models/Exercise');
 
 router.get('/explore', optionalAuth, async (req, res) => {
   try {
@@ -64,15 +65,83 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// router.put('/:id', auth, async (req, res) => {
+//   try {
+//     const workout = await Workout.findOne({ _id: req.params.id, creator: req.user._id });
+//     if (!workout) return res.status(404).json({ message: 'Workout not found or unauthorized' });
+//     Object.assign(workout, req.body);
+//     await workout.save();
+//     res.json(workout);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
 router.put('/:id', auth, async (req, res) => {
   try {
-    const workout = await Workout.findOne({ _id: req.params.id, creator: req.user._id });
-    if (!workout) return res.status(404).json({ message: 'Workout not found or unauthorized' });
-    Object.assign(workout, req.body);
+    const workout = await Workout.findOne({
+      _id: req.params.id,
+      creator: req.user._id,
+    });
+
+    if (!workout) {
+      return res.status(404).json({
+        message: 'Workout not found or unauthorized',
+      });
+    }
+
+    const updates = { ...req.body };
+
+    if (Array.isArray(updates.exercises)) {
+      const resolvedExercises = [];
+
+      for (const item of updates.exercises) {
+        let exerciseId = item.exercise;
+
+        // Handle populated Exercise objects.
+        if (exerciseId && typeof exerciseId === 'object') {
+          exerciseId = exerciseId._id;
+        }
+
+        // Recover missing IDs using the saved exercise name.
+        if (!exerciseId && item.exerciseName) {
+          const exerciseDoc = await Exercise.findOne({
+            name: {
+              $regex: `^${item.exerciseName.replace(
+                /[.*+?^${}()|[\]\\]/g,
+                '\\$&'
+              )}$`,
+              $options: 'i',
+            },
+          });
+
+          exerciseId = exerciseDoc?._id;
+        }
+
+        if (!exerciseId) {
+          return res.status(400).json({
+            message: `Cannot find exercise "${item.exerciseName || 'Unknown'}". Remove it and add it again using exercise search.`,
+          });
+        }
+
+        resolvedExercises.push({
+          ...item,
+          exercise: exerciseId,
+        });
+      }
+
+      updates.exercises = resolvedExercises;
+    }
+
+    Object.assign(workout, updates);
     await workout.save();
+
     res.json(workout);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Workout update error:', err);
+
+    res.status(500).json({
+      message: err.message,
+    });
   }
 });
 
